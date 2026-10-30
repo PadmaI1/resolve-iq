@@ -1,4 +1,4 @@
-// AmeBot — Chat UI Logic
+// ResolveIQ — Chat UI Logic
 //
 // STATE:
 //   session_id — null on first message, then set from backend.

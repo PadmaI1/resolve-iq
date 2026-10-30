@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 # and ingestion falls back to live-scraping the website.
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Set AMEBOT_SKIP_DOTENV=1 to ignore Backend/.env entirely (CI, containers, and
+# Set RESOLVEIQ_SKIP_DOTENV=1 to ignore Backend/.env entirely (CI, containers, and
 # the offline test suite, which must not pick up real credentials).
-if os.getenv("AMEBOT_SKIP_DOTENV", "").lower() not in ("1", "true", "yes"):
+if os.getenv("RESOLVEIQ_SKIP_DOTENV", "").lower() not in ("1", "true", "yes"):
     load_dotenv(os.path.join(_BASE_DIR, ".env"), override=True)
 
 # Azure OpenAI

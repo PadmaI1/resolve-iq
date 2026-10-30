@@ -1,14 +1,14 @@
-# Design — AmeBot Hardening, Test Suite, Docs & Interview Prep
+# Design — ResolveIQ Hardening, Test Suite, Docs & Interview Prep
 
 **Date:** 2026-08-28
 **Branch:** `fix/hardening-and-tests` (off `main` @ `fe60afe`)
-**Author:** Jitesh Kumar (with Claude Code)
+**Author:** Padma Iyer
 
 ---
 
 ## 1. Context
 
-AmeBot is a FastAPI Retrieval-Augmented-Generation (RAG) customer-support bot
+ResolveIQ is a FastAPI Retrieval-Augmented-Generation (RAG) customer-support bot
 built as a recruitment assignment for Amenify. It is deployed live on Azure App
 Service. The pipeline: query rewrite -> FAISS semantic search -> similarity
 threshold gate -> Azure OpenAI GPT answering from retrieved context only ->
@@ -215,7 +215,7 @@ pytest.ini               # markers = live; testpaths = Backend/tests; filterwarn
 
 ## 9. Interview preparation (outside the repo)
 
-Location: `C:\D\python\AmeBot-interview-prep\` — a sibling of the repo directory,
+Location: `C:\D\python\ResolveIQ-interview-prep\` — a sibling of the repo directory,
 never staged or pushed.
 
 | File | Contents |
@@ -290,7 +290,7 @@ surfaced four more issues beyond B1–B11. All fixed with tests.
 
 | ID  | Problem | Fix |
 |-----|---------|-----|
-| B12 | `config.py` data paths were CWD-relative (`data/...`). Run from anywhere but `Backend/` (pytest from repo root; some deploy start commands), the 19-doc manual KB is not found and `load_raw_documents()` silently falls back to **live-scraping amenify.com**. | All data paths + the `.env` load are absolute, anchored to `_BASE_DIR = dirname(abspath(__file__))`. `AMEBOT_SKIP_DOTENV=1` opts out of the `.env` file (CI / containers / offline tests). |
+| B12 | `config.py` data paths were CWD-relative (`data/...`). Run from anywhere but `Backend/` (pytest from repo root; some deploy start commands), the 19-doc manual KB is not found and `load_raw_documents()` silently falls back to **live-scraping amenify.com**. | All data paths + the `.env` load are absolute, anchored to `_BASE_DIR = dirname(abspath(__file__))`. `RESOLVEIQ_SKIP_DOTENV=1` opts out of the `.env` file (CI / containers / offline tests). |
 | B13 | `MIN_SIMILARITY_SCORE = 0.70` is below `text-embedding-ada-002`'s similarity floor. Measured on this KB: out-of-domain questions score ~0.69–0.73 cosine, in-domain 0.80–0.94. The gate filtered almost nothing; junk queries reached the LLM (the strict prompt then refused). | Raised to **0.75** (empty gap between the clusters). README Layer-1 section updated with the measured numbers. |
 | B14 | `_rewrite_query` still had a debug `print(f"... '{msg}' → '{rewritten}'")` with a U+2192 arrow (missed by the Task-12 logging refactor). On a non-UTF-8 stdout (Windows cp1252) `print` raises `UnicodeEncodeError` → `/chat` returns 500 → **every follow-up question crashes**. | `log.debug` with an ASCII arrow. `_call_llm`'s `print` → `log.exception`. `JsonFormatter` now emits `ensure_ascii=True` so no log line can crash on stdout encoding. Regression test forbids `print()` in the request path. |
 | —   | `pytest -m live` could not run standalone — module collection imported the app with the conftest stub creds before `test_live` loaded `.env`. | `conftest.pytest_configure` loads `Backend/.env` when the run is `-m live`, before any app import. The creds guard keys on API-key + endpoint (the embedding-model name is legitimately `text-embedding-ada-002` on real resources too). |

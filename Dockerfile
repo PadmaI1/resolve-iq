@@ -1,7 +1,7 @@
 # Local / portable runtime. Azure App Service uses its own Oryx build —
 # this file is NOT part of that pipeline.
 #
-# Build context is the repo root:  docker build -t amebot .
+# Build context is the repo root:  docker build -t resolveiq .
 FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1 \

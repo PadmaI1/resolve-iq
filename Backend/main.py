@@ -28,14 +28,14 @@ from config import ALLOWED_ORIGINS, RATE_LIMIT, LOG_LEVEL
 from logging_config import configure_logging, get_logger
 
 configure_logging(LOG_LEVEL)
-log = get_logger("amebot")
+log = get_logger("resolveiq")
 
 
 # we will use lifespan instead of @app.on_event("startup") to load the index
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # startup
-    log.info("starting Amenify Support Bot")
+    log.info("starting ResolveIQ")
     try:
         load_index()
         log.info("faiss index loaded", extra={"n_chunks": get_total_chunks()})
@@ -52,18 +52,18 @@ async def lifespan(app: FastAPI):
             log.exception("FATAL: could not build faiss index")
             raise
 
-    log.info("Amenify Support Bot ready to serve")
+    log.info("ResolveIQ ready to serve")
     yield
-    log.info("shutting down Amenify Support Bot")
+    log.info("shutting down ResolveIQ")
 
 
 # app creation
 app = FastAPI(
-    title="Amenify Support Bot",
+    title="ResolveIQ",
     description=(
-        "AI-powered customer support bot for Amenify. "
-        "Answers questions using Amenify's knowledge base via RAG "
-        "(Retrieval Augmented Generation) with Azure OpenAI."
+        "A production-ready RAG-powered customer support assistant built with "
+        "FastAPI, FAISS, and Azure OpenAI. Features semantic retrieval, query "
+        "rewriting, grounded responses, session management, and hallucination controls."
     ),
     version="1.0.0",
     lifespan=lifespan

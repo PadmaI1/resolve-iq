@@ -25,7 +25,7 @@ from logging_config import get_logger
 from retriever import retrieve
 from session import create_session, get_history, add_message
 
-log = get_logger("amebot.chat")
+log = get_logger("resolveiq.chat")
 
 _client = AzureOpenAI(
     api_key=AZURE_OPENAI_API_KEY,

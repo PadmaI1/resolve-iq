@@ -1,7 +1,8 @@
 [project]
-name = "amebot"
+name = "resolveiq"
 version = "1.0.0"
-description = "AmeBot — Amenify customer support RAG bot (dev/test tooling; deploy uses Backend/requirements.txt)"
+description = "ResolveIQ — a production-ready RAG-powered customer support assistant built with FastAPI, FAISS, and Azure OpenAI. Features semantic retrieval, query rewriting, grounded responses, session management, and hallucination controls."
+authors = [{ name = "Padma Iyer", email = "padmaiyer01@protonmail.com" }]
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115",

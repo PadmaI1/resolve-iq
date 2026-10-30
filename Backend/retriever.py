@@ -18,7 +18,7 @@ from config import (
 )
 from logging_config import get_logger
 
-log = get_logger("amebot.retriever")
+log = get_logger("resolveiq.retriever")
 
 _index : faiss.Index | None = None
 _chunks: list[dict] = []

@@ -1,8 +1,8 @@
-# AmeBot Hardening, Tests, Docs & Interview Prep — Implementation Plan
+# ResolveIQ Hardening, Tests, Docs & Interview Prep — Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Fix the bugs found in code review, add four scoped features, and stand up a real test suite + docs for the AmeBot RAG support bot — without any change to the live Azure deploy path.
+**Goal:** Fix the bugs found in code review, add four scoped features, and stand up a real test suite + docs for the ResolveIQ RAG support bot — without any change to the live Azure deploy path.
 
 **Architecture:** FastAPI app in `Backend/` with bare (non-package) imports. RAG pipeline: `chat.py` orchestrates `retriever.py` (FAISS search) + Azure OpenAI. `session.py` holds in-memory history. Frontend is static vanilla JS served by the same app. Tests live in `Backend/tests/`, run offline with deterministic fake embeddings and a real in-memory FAISS index; Azure network calls are monkeypatched. An opt-in `-m live` suite hits real Azure when credentials are present.
 
@@ -16,7 +16,7 @@
 - All work on branch `fix/hardening-and-tests` (already created off `main` @ `fe60afe`).
 - Commit messages state the problem, then the fix. One logical change per commit.
 - Offline tests: no network, no API key required, deterministic, target < 5 s total.
-- Interview-prep material goes in `C:\D\python\AmeBot-interview-prep\` — **outside** the repo, never staged or committed.
+- Interview-prep material goes in `C:\D\python\ResolveIQ-interview-prep\` — **outside** the repo, never staged or committed.
 - Backend modules import each other by bare name (`import config`, `from retriever import retrieve`). Tests make this work with `pythonpath = ["Backend"]` in `pyproject.toml`, not by converting to a package.
 - New env vars introduced: `RATE_LIMIT` (default `"20/minute"`, `""` disables), `ALLOWED_ORIGINS` (default `"*"`), `LOG_LEVEL` (default `"INFO"`), `LOG_QUERY_TEXT` (default `"false"`).
 
@@ -71,9 +71,9 @@
 
 ```toml
 [project]
-name = "amebot"
+name = "resolveiq"
 version = "1.0.0"
-description = "AmeBot — Amenify customer support RAG bot (dev/test tooling; deploy uses Backend/requirements.txt)"
+description = "ResolveIQ — Amenify customer support RAG bot (dev/test tooling; deploy uses Backend/requirements.txt)"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115",
@@ -1391,7 +1391,7 @@ def test_json_formatter_includes_extras():
 
 
 def test_chat_emits_one_structured_record(fake_index, mock_azure, caplog):
-    with caplog.at_level(logging.INFO, logger="amebot.chat"):
+    with caplog.at_level(logging.INFO, logger="resolveiq.chat"):
         chat.chat("who founded Amenify", None)
     recs = [r for r in caplog.records if getattr(r, "event", None) == "chat_request"]
     assert len(recs) == 1
@@ -1403,7 +1403,7 @@ def test_chat_emits_one_structured_record(fake_index, mock_azure, caplog):
 
 
 def test_chat_log_omits_query_text_by_default(fake_index, mock_azure, caplog):
-    with caplog.at_level(logging.INFO, logger="amebot.chat"):
+    with caplog.at_level(logging.INFO, logger="resolveiq.chat"):
         chat.chat("who founded Amenify", None)
     r = [x for x in caplog.records if getattr(x, "event", None) == "chat_request"][0]
     assert not hasattr(r, "query")
@@ -1429,7 +1429,7 @@ from config import (
     LOG_QUERY_TEXT,
 )
 
-log = get_logger("amebot.chat")
+log = get_logger("resolveiq.chat")
 ```
 
 Replace the body of `chat()` from the blank-message guard onward with:
@@ -1491,13 +1491,13 @@ from logging_config import configure_logging, get_logger
 from config import ALLOWED_ORIGINS, RATE_LIMIT, LOG_LEVEL
 
 configure_logging(LOG_LEVEL)
-log = get_logger("amebot")
+log = get_logger("resolveiq")
 ```
 In `lifespan`, replace the `print(...)` calls with `log.info(...)` (plain messages, no extras needed). In `chat_endpoint`'s `except`, replace `print(f"Error processing chat: {e}")` with `log.exception("chat endpoint failed")`.
 
 - [ ] **Step 7: retriever.py print → logger**
 
-In `Backend/retriever.py`, add `from logging_config import get_logger` and `log = get_logger("amebot.retriever")`; replace the two `print(...)` calls in `load_index` with `log.info(...)`.
+In `Backend/retriever.py`, add `from logging_config import get_logger` and `log = get_logger("resolveiq.retriever")`; replace the two `print(...)` calls in `load_index` with `log.info(...)`.
 
 - [ ] **Step 8: Run — expect pass**
 
@@ -1596,7 +1596,7 @@ frontend/*.md
 
 - [ ] **Step 5: Validate the Dockerfile syntax**
 
-Run: `docker build -t amebot:test . --no-cache` if Docker is available; otherwise
+Run: `docker build -t resolveiq:test . --no-cache` if Docker is available; otherwise
 `uv run python -c "print(open('Dockerfile').read())"` and eyeball it. Note in the
 commit which check ran.
 
@@ -1851,8 +1851,8 @@ dependency, update both (regenerate the pin list with
 
 ```bash
 cp Backend/.env.example Backend/.env   # then fill in your Azure keys
-docker build -t amebot .
-docker run --rm -p 8000:8000 --env-file Backend/.env amebot
+docker build -t resolveiq .
+docker run --rm -p 8000:8000 --env-file Backend/.env resolveiq
 ```
 
 The container runs from `Backend/` and serves the frontend from `../frontend`.
@@ -1921,13 +1921,13 @@ The assignment 'Reasoning & Design' Q&A is kept."
 - [ ] **Step 1: Write `CLAUDE.md`**
 
 ```markdown
-# CLAUDE.md — AmeBot
+# CLAUDE.md — ResolveIQ
 
 Guidance for Claude Code (and humans) working in this repo.
 
 ## What this is
 
-AmeBot: a FastAPI RAG customer-support bot built as an Amenify recruitment
+ResolveIQ: a FastAPI RAG customer-support bot built as an Amenify recruitment
 assignment. Query rewrite → FAISS semantic search → 0.70 similarity gate →
 Azure OpenAI GPT answering only from retrieved context → structured JSON reply
 with source citations. Deployed on Azure App Service.
@@ -2003,7 +2003,7 @@ deploy workflow, no push/PR."
 
 ## Task 18: Interview-prep material (OUTSIDE the repo — no commit)
 
-**Files (all under `C:\D\python\AmeBot-interview-prep\`, never staged):**
+**Files (all under `C:\D\python\ResolveIQ-interview-prep\`, never staged):**
 - `00-project-walkthrough.md`
 - `01-architecture-and-tradeoffs.md`
 - `02-likely-questions.md`
@@ -2012,12 +2012,12 @@ deploy workflow, no push/PR."
 - `05-gaps-and-honest-answers.md`
 
 **Interfaces:** none. This task produces no git commit. Verify with
-`git -C c:/D/python/AmeBot status` staying clean and the folder existing at the
+`git -C c:/D/python/ResolveIQ status` staying clean and the folder existing at the
 sibling path.
 
 - [ ] **Step 1: Create the folder**
 
-Run: `mkdir -p /c/D/python/AmeBot-interview-prep` (bash) — confirm it is a sibling
+Run: `mkdir -p /c/D/python/ResolveIQ-interview-prep` (bash) — confirm it is a sibling
 of the repo, not inside it.
 
 - [ ] **Step 2: Write `00-project-walkthrough.md`** — module-by-module tour. For each
@@ -2078,7 +2078,7 @@ fallback string (observable only via logs).
 
 - [ ] **Step 8: Verify no repo pollution**
 
-Run: `git -C /c/D/python/AmeBot status --porcelain`
+Run: `git -C /c/D/python/ResolveIQ status --porcelain`
 Expected: only the Task 17 state (clean tree if Task 17 already committed) — the
 prep folder must not appear.
 
@@ -2087,7 +2087,7 @@ prep folder must not appear.
 ## Task 19: Memory + global uv instruction (no repo commit)
 
 **Files:**
-- Create: memory files under `C:\Users\jites\.claude\projects\c--D-python-AmeBot\memory\`
+- Create: memory files under `C:\Users\jites\.claude\projects\c--D-python-ResolveIQ\memory\`
 - Modify: `C:\Users\jites\.claude\CLAUDE.md` (global), append memory pointers to that memory dir's `MEMORY.md`
 
 **Interfaces:** none. Not part of the branch.
@@ -2103,16 +2103,16 @@ prep folder must not appear.
 ```
 
 - [ ] **Step 2: Memory — working agreement for this project.** Write
-`~/.claude/projects/c--D-python-AmeBot/memory/amebot-working-agreement.md`:
+`~/.claude/projects/c--D-python-ResolveIQ/memory/resolveiq-working-agreement.md`:
 ```markdown
 ---
-name: amebot-working-agreement
-description: How to work on the AmeBot repo — no push, small commits, deploy path is sacred
+name: resolveiq-working-agreement
+description: How to work on the ResolveIQ repo — no push, small commits, deploy path is sacred
 metadata:
   type: feedback
 ---
 
-On AmeBot (`c:\D\python\AmeBot`), the user integrates branches themselves —
+On ResolveIQ (`c:\D\python\ResolveIQ`), the user integrates branches themselves —
 **never `git push` and never open a PR**. Work on a dedicated branch with small
 commits whose messages state the problem then the fix.
 
@@ -2123,37 +2123,37 @@ Azure deploy triggers on `main`.
 name. Never edit `.github/workflows/main_amenify-support-bot.yml`,
 `Backend/requirements.txt`, or the root `requirements.txt` — that is the Oryx
 deploy path. Local dev/test uses `uv` + `pyproject.toml`. See
-[[amebot-project-context]].
+[[resolveiq-project-context]].
 ```
 
 - [ ] **Step 3: Memory — project context.** Write
-`~/.claude/projects/c--D-python-AmeBot/memory/amebot-project-context.md`:
+`~/.claude/projects/c--D-python-ResolveIQ/memory/resolveiq-project-context.md`:
 ```markdown
 ---
-name: amebot-project-context
-description: What AmeBot is and why it matters to the user
+name: resolveiq-project-context
+description: What ResolveIQ is and why it matters to the user
 metadata:
   type: project
 ---
 
-AmeBot is a FastAPI RAG support bot the user built for an **Amenify recruitment
+ResolveIQ is a FastAPI RAG support bot the user built for an **Amenify recruitment
 assignment** (they did one interview, did not get the role). It is on the user's
 resume, so it needs to look and work like a strong portfolio project.
 
 Hardening/test/doc work is tracked in
 `docs/superpowers/specs/2026-08-28-hardening-tests-docs-design.md` and the
 matching plan. Interview prep lives OUTSIDE the repo at
-`c:\D\python\AmeBot-interview-prep\` (never committed). See
-[[amebot-working-agreement]].
+`c:\D\python\ResolveIQ-interview-prep\` (never committed). See
+[[resolveiq-working-agreement]].
 ```
 
 - [ ] **Step 4: Update `MEMORY.md`** in that memory dir — append:
 ```markdown
-- [AmeBot working agreement](amebot-working-agreement.md) — no push, small commits, deploy path off-limits
-- [AmeBot project context](amebot-project-context.md) — Amenify assignment, resume project, prep is out-of-repo
+- [ResolveIQ working agreement](resolveiq-working-agreement.md) — no push, small commits, deploy path off-limits
+- [ResolveIQ project context](resolveiq-project-context.md) — Amenify assignment, resume project, prep is out-of-repo
 ```
 
-- [ ] **Step 5: Verify** — `git -C /c/D/python/AmeBot status` unaffected by any of this.
+- [ ] **Step 5: Verify** — `git -C /c/D/python/ResolveIQ status` unaffected by any of this.
 
 ---
 
@@ -2183,7 +2183,7 @@ Expected: prints `app import ok` and a route list including `/chat`, `/health`, 
 
 - [ ] **Step 5: Branch review**
 
-Run: `git -C /c/D/python/AmeBot log --oneline main..HEAD` and `git status`
+Run: `git -C /c/D/python/ResolveIQ log --oneline main..HEAD` and `git status`
 Expected: ~17 commits, clean tree, branch `fix/hardening-and-tests`, **not pushed**.
 
 - [ ] **Step 6: Frontend change is inert without a runner — record it**

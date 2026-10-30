@@ -15,7 +15,7 @@ def test_health_ok_when_index_loaded(client):
 def test_root_serves_frontend(client):
     r = client.get("/")
     assert r.status_code == 200
-    assert "Amenify Support" in r.text
+    assert "ResolveIQ" in r.text
 
 
 def test_chat_happy_path(client):

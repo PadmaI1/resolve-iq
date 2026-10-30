@@ -2,7 +2,7 @@
 BEFORE anything imports `config` (which raises if they are missing)."""
 import os
 
-os.environ.setdefault("AMEBOT_SKIP_DOTENV", "1")  # never read Backend/.env in the offline suite
+os.environ.setdefault("RESOLVEIQ_SKIP_DOTENV", "1")  # never read Backend/.env in the offline suite
 os.environ.setdefault("AZURE_OPENAI_API_KEY", "test-key")
 os.environ.setdefault("AZURE_OPENAI_ENDPOINT", "https://test.openai.azure.com/")
 os.environ.setdefault("AZURE_OPENAI_DEPLOYMENT_NAME", "test-gpt")

@@ -1,11 +1,11 @@
-# CLAUDE.md — AmeBot
+# CLAUDE.md — ResolveIQ
 
 Guidance for Claude Code (and humans) working in this repo.
 
 ## What this is
 
-AmeBot: a FastAPI RAG customer-support bot built as an Amenify recruitment
-assignment. Pipeline: follow-up query rewrite → FAISS semantic search → 0.70
+ResolveIQ: a production-ready FastAPI RAG customer-support assistant (FAISS +
+Azure OpenAI), answering from an Amenify knowledge base. Pipeline: follow-up query rewrite → FAISS semantic search → 0.75
 similarity gate (below it, answer "I don't know" with **no** LLM call) → Azure
 OpenAI GPT answering only from retrieved context → structured JSON reply with
 source citations. Deployed on Azure App Service.
@@ -39,7 +39,7 @@ uv run pytest -m live      # real Azure (needs AZURE_OPENAI_* set to real values
 uv run pytest --cov=Backend
 
 # docker (portable runtime; not the Azure path)
-docker build -t amebot . && docker run --rm -p 8000:8000 --env-file Backend/.env amebot
+docker build -t resolveiq . && docker run --rm -p 8000:8000 --env-file Backend/.env resolveiq
 ```
 
 ## Endpoints
@@ -74,7 +74,7 @@ docker build -t amebot . && docker run --rm -p 8000:8000 --env-file Backend/.env
 
 In-memory sessions (no Redis), single FAISS instance (no horizontal scale),
 static KB, no streaming, word-based chunking. Documented trade-offs, not bugs —
-see `README.md` "Section 3: Reasoning & Design" and `docs/superpowers/specs/`.
+see `README.md` "Design & Reasoning" and `docs/superpowers/specs/`.
 
 ## Design docs
 

@@ -18,7 +18,7 @@ def test_json_formatter_includes_extras():
 
 
 def test_chat_emits_one_structured_record(fake_index, mock_azure, low_threshold, caplog):
-    with caplog.at_level(logging.INFO, logger="amebot.chat"):
+    with caplog.at_level(logging.INFO, logger="resolveiq.chat"):
         chat.chat("who founded Amenify", None)
     recs = [r for r in caplog.records if getattr(r, "event", None) == "chat_request"]
     assert len(recs) == 1
@@ -30,7 +30,7 @@ def test_chat_emits_one_structured_record(fake_index, mock_azure, low_threshold,
 
 
 def test_chat_log_omits_query_text_by_default(fake_index, mock_azure, low_threshold, caplog):
-    with caplog.at_level(logging.INFO, logger="amebot.chat"):
+    with caplog.at_level(logging.INFO, logger="resolveiq.chat"):
         chat.chat("who founded Amenify", None)
     r = [x for x in caplog.records if getattr(x, "event", None) == "chat_request"][0]
     assert not hasattr(r, "query")

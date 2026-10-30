@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 128" role="img" aria-label="ResolveIQ">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#6d28d9"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="30" fill="url(#g)"/>
+  <path d="M32 30H96A10 10 0 0 1 106 40V82A10 10 0 0 1 96 92H66L48 108V92H32A10 10 0 0 1 22 82V40A10 10 0 0 1 32 30Z" fill="#fff"/>
+  <path d="M42 61L56 74L80 49" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="88" cy="42" r="6" fill="#6d28d9"/>
+  <text x="156" y="84" font-family="Inter,'Segoe UI',Helvetica,Arial,sans-serif" font-size="68" font-weight="700" letter-spacing="-2" fill="#0f172a">Resolve<tspan fill="#6d28d9">IQ</tspan></text>
+</svg>
